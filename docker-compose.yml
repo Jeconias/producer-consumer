@@ -1,0 +1,11 @@
+version: "3"
+services:
+  rabbitMQ:
+    image: rabbitmq:3-management
+    hostname: rabbitMQNice
+    ports:
+      - "3000:5672"
+      - "3001:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq

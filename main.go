@@ -1,46 +1,42 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 
-	"github.com/Jeconias/producer-consumer/manager"
-
-	"github.com/gorilla/websocket"
-)
-
-var (
-	upgrader websocket.Upgrader
-	sockets  *manager.ManagerAMQPWS
+	"github.com/Jeconias/producer-consumer/pac"
+	"github.com/Jeconias/producer-consumer/websocket"
 )
 
 func handleWS(writer http.ResponseWriter, request *http.Request) {
-	socket, err := upgrader.Upgrade(writer, request, nil)
+	socket, err := websocket.Upgrader.Upgrade(writer, request, nil)
 	if err != nil {
 		//TODO Add pattern to solve the panic
 		panic(err)
 	}
-
-	sockets.HandleNewConnection(socket)
+	websocket.WsManager.HandleNewConnection(socket)
 	for {
-		if err := sockets.SendToQueue(socket); err != nil {
-			fmt.Println(err.Error())
-			break
+		tData, err := websocket.WsManager.TDataWithFrom(socket)
+		if err != nil {
+			panic(err)
+		}
+		data, err := json.Marshal(tData)
+		if err != nil {
+			//TODO Add pattern to solve the panic
+			panic(err)
+		}
+		err = pac.ManagerAMQP.ProducerQueue("pac", data)
+		if err != nil {
+			//TODO Add pattern to solve the panic
+			panic(err)
 		}
 	}
 }
 
 func main() {
 
-	upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin:     func(r *http.Request) bool { return true },
-	}
-
-	sockets = manager.NewWS()
-	//TODO Remove Consume of main
-	go sockets.ConsumeQueue("pac")
+	websocket.StartWs()
+	pac.StartManagerAMQP()
 
 	http.HandleFunc("/", handleWS)
 	http.ListenAndServe(":8000", nil)

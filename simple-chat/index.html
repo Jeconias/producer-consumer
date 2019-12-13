@@ -4,14 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <link rel="stylesheet" href="css/ws.css" />
+    <title>Simple Chat</title>
   </head>
   <body>
-    <form id="formNickname">
-      <input type="text" id="toSend" value="" />
-    </form>
-    <div id="list"></div>
+    <div class="menu">
+      <div class="back">
+        <i class="fa fa-chevron-left"></i>
+        <img src="https://i.imgur.com/DY6gND0.png" draggable="false" />
+      </div>
+      <div class="name">Alex</div>
+    </div>
+    <ol class="chat"></ol>
+    <input
+      class="textarea"
+      id="textareaInput"
+      type="text"
+      placeholder="Escreva aqui"
+    />
+    <div class="emojis"></div>
   </body>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="js/websocket.js"></script>
+  <script src="js/ws.js"></script>
 </html>
